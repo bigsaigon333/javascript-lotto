@@ -1,9 +1,4 @@
-import {
-  ACTION_TYPE,
-  CLASSNAME,
-  JS_SELECTOR,
-  STATE_TYPE,
-} from "../constants/index.js";
+import { ACTION_TYPE, CLASSNAME, JS_SELECTOR } from "../constants/index.js";
 import { Lotto } from "../models/index.js";
 import store from "../store/index.js";
 import {
@@ -78,11 +73,6 @@ const createModal = () => {
   const render = () => {
     const { lottos, winningNumber } = store.getState();
 
-    if (winningNumber.numbers.length === 0) {
-      $container.classList.remove(CLASSNAME.MODAL.OPEN);
-      return;
-    }
-
     const winningCount = produceWinningCount(lottos, winningNumber);
     const profitRate = calculateProfitRate(lottos, winningCount);
     const profitRateParagraph = `당신의 총 수익률은 ${profitRate.toLocaleString(
@@ -110,9 +100,15 @@ const createModal = () => {
   };
 
   const init = () => {
+    store.subscribe(ACTION_TYPE.CLEAR, () => {
+      console.log(`${ACTION_TYPE.CLEAR} modal closeModal`);
+
+      closeModal();
+    });
+    store.subscribe(ACTION_TYPE.WINNING_NUMBERS.SET, render);
+
     $close.addEventListener("click", closeModal);
     $restartButton.addEventListener("click", restart);
-    store.subscribe(STATE_TYPE.WINNING_NUMBER, render);
   };
 
   return { init };

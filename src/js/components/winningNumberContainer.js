@@ -3,7 +3,6 @@ import {
   ALERT_MESSAGE,
   CLASSNAME,
   JS_SELECTOR,
-  STATE_TYPE,
 } from "../constants/index.js";
 import { EmptyInputError, ValidationError } from "../errors/index.js";
 import { Lotto } from "../models/index.js";
@@ -17,6 +16,7 @@ import {
 
 const createWinningNumberContainer = () => {
   const $container = $(toDAS(JS_SELECTOR.WINNING_NUMBER.CONTAINER));
+  // TODO: 일관성 측면에서 $parent 삭제 검토
   const $$inputs = $$(toCS(CLASSNAME.WINNING_NUMBER.INPUT), {
     $parent: $container,
   });
@@ -96,22 +96,26 @@ const createWinningNumberContainer = () => {
   const render = () => {
     const { lottos } = store.getState();
 
-    if (lottos.length === 0) {
-      $$inputs.forEach(($input) => $input.clear());
-      $bonusInput.clear();
-
-      $container.hide();
-      return;
-    }
-
+    // TODO; 조건문 생략가능한지 검토
     if (lottos && $container.classList.contains(CLASSNAME.COMMON.HIDDEN)) {
       $container.show();
     }
   };
 
+  const clear = () => {
+    console.log(`${ACTION_TYPE.CLEAR} winningNumberContainer clear`);
+
+    $$inputs.forEach(($input) => $input.clear());
+    $bonusInput.clear();
+
+    $container.hide();
+  };
+
   const init = () => {
     $container.addEventListener("submit", getWinningNumberWithValidation);
-    store.subscribe(STATE_TYPE.LOTTOS, render);
+
+    store.subscribe(ACTION_TYPE.LOTTOS.ADDED, render);
+    store.subscribe(ACTION_TYPE.CLEAR, clear);
   };
 
   return { init };

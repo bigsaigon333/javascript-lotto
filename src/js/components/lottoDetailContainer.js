@@ -1,4 +1,4 @@
-import { CLASSNAME, JS_SELECTOR, STATE_TYPE } from "../constants/index.js";
+import { ACTION_TYPE, CLASSNAME, JS_SELECTOR } from "../constants/index.js";
 import {
   $,
   toDataAttributeSelector as toDAS,
@@ -34,11 +34,6 @@ const createLottoDetailContainer = () => {
   const render = () => {
     const { lottos } = store.getState();
 
-    if (lottos.length === 0) {
-      $lottoDetailContainer.hide();
-      return;
-    }
-
     $lottoDetailLabel.innerText = `총 ${lottos.length}개를 구매하였습니다.`;
 
     $lottoIconWrapper.innerHTML = lottos
@@ -53,10 +48,19 @@ const createLottoDetailContainer = () => {
     $lottoDetailContainer.toggle("detail");
   };
 
-  const init = () => {
-    $toggleButton.addEventListener("change", toggleDetailMode);
+  const clear = () => {
+    console.log(`${ACTION_TYPE.CLEAR} lottoDetailContainer clear`);
 
-    store.subscribe(STATE_TYPE.LOTTOS, render);
+    $lottoIconWrapper.classList.remove("flex-col");
+
+    $lottoDetailContainer.hide();
+  };
+
+  const init = () => {
+    store.subscribe(ACTION_TYPE.CLEAR, clear);
+    store.subscribe(ACTION_TYPE.LOTTOS.ADDED, render);
+
+    $toggleButton.addEventListener("change", toggleDetailMode);
   };
 
   return { init };

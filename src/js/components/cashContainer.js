@@ -1,9 +1,4 @@
-import {
-  ACTION_TYPE,
-  STATE_TYPE,
-  ALERT_MESSAGE,
-  JS_SELECTOR,
-} from "../constants/index.js";
+import { ACTION_TYPE, ALERT_MESSAGE, JS_SELECTOR } from "../constants/index.js";
 import {
   $,
   toDataAttributeSelector as toDAS,
@@ -56,22 +51,24 @@ const createCashContainer = () => {
         error instanceof ValidationError
       ) {
         alert(error.message);
-        $cashInput.clear();
-        $cashInput.focus();
         return;
       }
 
       throw error;
+    } finally {
+      $cashInput.clear();
+      $cashInput.focus();
     }
   };
 
-  const render = () => {
+  const clear = () => {
+    console.log(`${ACTION_TYPE.CLEAR} cashContainer clear`);
     $cashInput.clear();
     $cashInput.focus();
   };
 
   const init = () => {
-    store.subscribe(STATE_TYPE.LOTTOS, render);
+    store.subscribe(ACTION_TYPE.CLEAR, clear);
     $cashContainer.addEventListener("submit", createLottosAfterValidation);
   };
 
